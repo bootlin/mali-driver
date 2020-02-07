@@ -13,5 +13,6 @@
 #
 
 
+CONFIG_MALI_MIDGARD=m
 
 obj-$(CONFIG_MALI_MIDGARD) += midgard/
