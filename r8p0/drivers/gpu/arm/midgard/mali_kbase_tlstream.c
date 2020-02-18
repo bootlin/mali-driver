@@ -1036,18 +1036,18 @@ static void kbasep_tlstream_flush_stream(enum tl_stream_type stype)
 }
 
 /**
- * kbasep_tlstream_autoflush_timer_callback - autoflush timer callback
- * @data:  unused
+ * kbasep_tlstream_autoflush_timer_cb - autoflush timer callback
+ * @timer:  unused
  *
  * Timer is executed periodically to check if any of the stream contains
  * buffer ready to be submitted to user space.
  */
-static void kbasep_tlstream_autoflush_timer_callback(unsigned long data)
+static void kbasep_tlstream_autoflush_timer_cb(struct timer_list *timer)
 {
 	enum tl_stream_type stype;
 	int                 rcode;
 
-	CSTD_UNUSED(data);
+	CSTD_UNUSED(timer);
 
 	for (stype = 0; stype < TL_STREAM_TYPE_COUNT; stype++) {
 		struct tl_stream *stream = tl_stream[stype];
@@ -1371,9 +1371,7 @@ int kbase_tlstream_init(void)
 
 	/* Initialize autoflush timer. */
 	atomic_set(&autoflush_timer_active, 0);
-	setup_timer(&autoflush_timer,
-			kbasep_tlstream_autoflush_timer_callback,
-			0);
+	timer_setup(&autoflush_timer, kbasep_tlstream_autoflush_timer_cb, 0);
 
 	return 0;
 }

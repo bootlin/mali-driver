@@ -370,12 +370,11 @@ static void kbase_fence_debug_timeout(struct kbase_jd_atom *katom)
 }
 #endif /* CONFIG_MALI_FENCE_DEBUG */
 
-void kbasep_soft_job_timeout_worker(unsigned long data)
+void kbasep_soft_job_timeout_worker(struct timer_list *timer)
 {
-	struct kbase_context *kctx = (struct kbase_context *)data;
+	struct kbase_context *kctx = from_timer(kctx, timer, soft_job_timeout);
 	u32 timeout_ms = (u32)atomic_read(
 			&kctx->kbdev->js_data.soft_job_timeout_ms);
-	struct timer_list *timer = &kctx->soft_job_timeout;
 	ktime_t cur_time = ktime_get();
 	bool restarting = false;
 	unsigned long lflags;
