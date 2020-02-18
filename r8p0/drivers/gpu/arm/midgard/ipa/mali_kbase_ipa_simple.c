@@ -37,7 +37,7 @@ static int kbase_simple_power_model_get_dummy_temp(
 	struct thermal_zone_device *tz,
 	unsigned long *temp)
 {
-	*temp = ACCESS_ONCE(dummy_temp);
+	*temp = READ_ONCE(dummy_temp);
 	return 0;
 }
 
@@ -48,7 +48,7 @@ static int kbase_simple_power_model_get_dummy_temp(
 	struct thermal_zone_device *tz,
 	int *dummy_temp)
 {
-	*temp = ACCESS_ONCE(dummy_temp);
+	*temp = READ_ONCE(dummy_temp);
 	return 0;
 }
 #endif
@@ -62,7 +62,7 @@ static int kbase_simple_power_model_get_dummy_temp(
 
 void kbase_simple_power_model_set_dummy_temp(int temp)
 {
-	ACCESS_ONCE(dummy_temp) = temp;
+	WRITE_ONCE(dummy_temp, temp);
 }
 KBASE_EXPORT_TEST_API(kbase_simple_power_model_set_dummy_temp);
 
@@ -149,7 +149,7 @@ static int poll_temperature(void *data)
 #endif
 
 	while (!kthread_should_stop()) {
-		struct thermal_zone_device *tz = ACCESS_ONCE(model_data->gpu_tz);
+		struct thermal_zone_device *tz = READ_ONCE(model_data->gpu_tz);
 
 		if (tz) {
 			int ret;
@@ -164,9 +164,9 @@ static int poll_temperature(void *data)
 			temp = FALLBACK_STATIC_TEMPERATURE;
 		}
 
-		ACCESS_ONCE(model_data->current_temperature) = temp;
+		WRITE_ONCE(model_data->current_temperature, temp);
 
-		msleep_interruptible(ACCESS_ONCE(model_data->temperature_poll_interval_ms));
+		msleep_interruptible(READ_ONCE(model_data->temperature_poll_interval_ms));
 	}
 
 	return 0;
@@ -180,7 +180,7 @@ static int model_static_coeff(struct kbase_ipa_model *model, u32 *coeffp)
 	u64 coeff_big;
 	int temp;
 
-	temp = ACCESS_ONCE(model_data->current_temperature);
+	temp = READ_ONCE(model_data->current_temperature);
 
 	/* Range: 0 <= temp_scaling_factor < 2^24 */
 	temp_scaling_factor = calculate_temp_scaling_factor(model_data->ts,
@@ -296,7 +296,7 @@ static int kbase_simple_power_model_recalculate(struct kbase_ipa_model *model)
 		}
 	}
 
-	ACCESS_ONCE(model_data->gpu_tz) = tz;
+	WRITE_ONCE(model_data->gpu_tz, tz);
 
 	return 0;
 }
