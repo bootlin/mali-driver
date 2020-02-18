@@ -31,10 +31,10 @@ static noinline u64 invoke_smc_fid(u64 function_id,
 	register u64 x3 asm("x3") = arg2;
 
 	asm volatile(
-			__asmeq("%0", "x0")
-			__asmeq("%1", "x1")
-			__asmeq("%2", "x2")
-			__asmeq("%3", "x3")
+//			__asmeq("%0", "x0")
+//			__asmeq("%1", "x1")
+//			__asmeq("%2", "x2")
+//			__asmeq("%3", "x3")
 			"smc    #0\n"
 			: "+r" (x0)
 			: "r" (x1), "r" (x2), "r" (x3));
