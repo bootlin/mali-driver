@@ -21,7 +21,7 @@
 #ifdef CONFIG_MALI_DMA_FENCE
 
 #include <linux/list.h>
-#include <linux/reservation.h>
+#include <linux/dma-resv.h>
 #include <mali_kbase_fence.h>
 
 
@@ -31,7 +31,7 @@ struct kbase_context;
 
 /**
  * struct kbase_dma_fence_resv_info - Structure with list of reservation objects
- * @resv_objs:             Array of reservation objects to attach the
+ * @resv_objs:             Array of DMA reservation objects to attach the
  *                         new fence to.
  * @dma_fence_resv_count:  Number of reservation objects in the array.
  * @dma_fence_excl_bitmap: Specifies which resv_obj are exclusive.
@@ -40,22 +40,22 @@ struct kbase_context;
  * reservation objects.
  */
 struct kbase_dma_fence_resv_info {
-	struct reservation_object **resv_objs;
+	struct dma_resv **resv_objs;
 	unsigned int dma_fence_resv_count;
 	unsigned long *dma_fence_excl_bitmap;
 };
 
 /**
  * kbase_dma_fence_add_reservation() - Adds a resv to the array of resv_objs
- * @resv:      Reservation object to add to the array.
+ * @resv:      DMA reservation object to add to the array.
  * @info:      Pointer to struct with current reservation info
  * @exclusive: Boolean indicating if exclusive access is needed
  *
- * The function adds a new reservation_object to an existing array of
+ * The function adds a new dma_resv to an existing array of DMA
  * reservation_objects. At the same time keeps track of which objects require
  * exclusive access in dma_fence_excl_bitmap.
  */
-void kbase_dma_fence_add_reservation(struct reservation_object *resv,
+void kbase_dma_fence_add_reservation(struct dma_resv *resv,
 				     struct kbase_dma_fence_resv_info *info,
 				     bool exclusive);
 
