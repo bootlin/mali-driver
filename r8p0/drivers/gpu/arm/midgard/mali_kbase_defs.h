@@ -52,7 +52,7 @@
 #endif				/* CONFIG_KDS */
 
 #if defined(CONFIG_SYNC)
-#include <sync.h>
+#include <sync_debug.h>
 #else
 #include "mali_kbase_fence_defs.h"
 #endif

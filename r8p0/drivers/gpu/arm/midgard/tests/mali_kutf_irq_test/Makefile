@@ -38,6 +38,7 @@ TEST_CCFLAGS := \
 	-I$(CURDIR)/../../backend/gpu \
 	-I$(CURDIR)/ \
 	-I$(srctree)/drivers/staging/android \
+	-I$(srctree)/drivers/dma-buf \
 	-I$(srctree)/include/linux
 
 all:
