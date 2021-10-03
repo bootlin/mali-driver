@@ -42,6 +42,13 @@
 #include <linux/file.h>
 #include <linux/sizes.h>
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
+struct timespec {
+	__kernel_old_time_t	tv_sec;		/* seconds */
+	long			tv_nsec;	/* nanoseconds */
+};
+#endif
+
 #ifdef CONFIG_MALI_FPGA_BUS_LOGGER
 #include <linux/bus_logger.h>
 #endif
