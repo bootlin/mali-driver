@@ -624,6 +624,9 @@ static inline void getrawmonotonic(struct timespec *ts)
 }
 #endif
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0))
+#define NR_SLAB_RECLAIMABLE	NR_SLAB_RECLAIMABLE_B
+#endif
 
 #endif
 
