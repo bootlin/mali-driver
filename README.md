@@ -1,7 +1,7 @@
 # Mali Bifrost support
 
 This driver builds as a module against recent mainline kernels
-(5.4+). It brings support for Mali Bifrost GPUs, based on the
+(5.15+). It brings support for Mali Bifrost GPUs, based on the
 [official ARM r8p0-01rel0 Linux driver](https://developer.arm.com/tools-and-software/graphics-and-gaming/mali-drivers/bifrost-kernel).
 
 ## Device tree configuration

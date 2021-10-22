@@ -758,6 +758,18 @@ static void kbase_mem_copy_from_extres_page(struct kbase_context *kctx,
 	kunmap(pages[*target_page_nr]);
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
+void *dma_buf_kmap(struct dma_buf *dmabuf, unsigned long page_num)
+{
+	return NULL;
+}
+
+void dma_buf_kunmap(struct dma_buf *dmabuf, unsigned long page_num,
+	    void *vaddr)
+{
+}
+#endif
+
 static int kbase_mem_copy_from_extres(struct kbase_context *kctx,
 		struct kbase_debug_copy_buffer *buf_data)
 {

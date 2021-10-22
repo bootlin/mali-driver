@@ -218,6 +218,17 @@ kbase_dma_fence_cb(struct dma_fence *fence, struct dma_fence_cb *cb)
 		kbase_dma_fence_queue_work(katom);
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
+static int dma_resv_get_fences_rcu(struct dma_resv *obj,
+	        struct dma_fence **pfence_excl,
+	        unsigned int *pshared_count,
+	        struct dma_fence ***pshared)
+{
+	return dma_resv_get_fences(obj, pfence_excl, pshared_count,
+				   pshared);
+}
+#endif
+
 static int
 kbase_dma_fence_add_reservation_callback(struct kbase_jd_atom *katom,
 					 struct dma_resv *resv,

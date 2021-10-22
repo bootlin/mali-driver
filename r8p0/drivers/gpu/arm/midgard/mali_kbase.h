@@ -609,6 +609,24 @@ int kbase_io_history_resize(struct kbase_io_history *h, u16 new_size);
 
 #endif /* CONFIG_DEBUG_FS */
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0))
+static inline struct timespec timespec64_to_timespec(const struct timespec64 ts64)
+{
+	return *(const struct timespec *)&ts64;
+}
+
+static inline void getrawmonotonic(struct timespec *ts)
+{
+	struct timespec64 ts64;
+
+	ktime_get_raw_ts64(&ts64);
+	*ts = timespec64_to_timespec(ts64);
+}
+#endif
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0))
+#define NR_SLAB_RECLAIMABLE	NR_SLAB_RECLAIMABLE_B
+#endif
 
 #endif
 
