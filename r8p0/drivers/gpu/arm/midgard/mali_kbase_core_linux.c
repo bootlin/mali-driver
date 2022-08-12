@@ -4913,6 +4913,9 @@ module_exit(kbase_driver_exit);
 
 #endif /* CONFIG_OF */
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
+MODULE_IMPORT_NS(DMA_BUF);
+#endif
 MODULE_LICENSE("GPL");
 MODULE_VERSION(MALI_RELEASE_NAME " (UK version " \
 		__stringify(BASE_UK_VERSION_MAJOR) "." \
