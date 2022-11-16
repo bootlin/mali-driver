@@ -337,6 +337,16 @@ int dma_resv_reserve_shared(struct dma_resv *obj, unsigned int num_fences)
 {
 	return dma_resv_reserve_fences(obj, num_fences);
 }
+
+void dma_resv_add_shared_fence(struct dma_resv *obj, struct dma_fence *fence)
+{
+	dma_resv_add_fence(obj, fence, DMA_RESV_USAGE_READ);
+}
+
+void dma_resv_add_excl_fence(struct dma_resv *obj, struct dma_fence *fence)
+{
+	dma_resv_add_fence(obj, fence, DMA_RESV_USAGE_WRITE);
+}
 #endif
 
 int kbase_dma_fence_wait(struct kbase_jd_atom *katom,
