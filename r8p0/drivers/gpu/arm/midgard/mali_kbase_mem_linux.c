@@ -446,7 +446,11 @@ int kbase_mem_evictable_init(struct kbase_context *kctx)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 1, 0)
 	kctx->reclaim.batch = 0;
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
+	register_shrinker(&kctx->reclaim, "mali");
+#else
 	register_shrinker(&kctx->reclaim);
+#endif
 	return 0;
 }
 

@@ -218,7 +218,24 @@ kbase_dma_fence_cb(struct dma_fence *fence, struct dma_fence_cb *cb)
 		kbase_dma_fence_queue_work(katom);
 }
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0))
+static int dma_resv_get_fences_rcu(struct dma_resv *obj,
+		struct dma_fence **pfence_excl,
+		unsigned int *pshared_count,
+		struct dma_fence ***pshared)
+{
+	return dma_resv_get_fences(obj, DMA_RESV_USAGE_WRITE, pshared_count,
+				   pshared);
+}
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 18, 0))
+static int dma_resv_get_fences_rcu(struct dma_resv *obj,
+		struct dma_fence **pfence_excl,
+		unsigned int *pshared_count,
+		struct dma_fence ***pshared)
+{
+	return dma_resv_get_fences(obj, true, pshared_count, pshared);
+}
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 static int dma_resv_get_fences_rcu(struct dma_resv *obj,
 	        struct dma_fence **pfence_excl,
 	        unsigned int *pshared_count,
@@ -314,6 +331,23 @@ void kbase_dma_fence_add_reservation(struct dma_resv *resv,
 			info->dma_fence_excl_bitmap);
 	(info->dma_fence_resv_count)++;
 }
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0))
+int dma_resv_reserve_shared(struct dma_resv *obj, unsigned int num_fences)
+{
+	return dma_resv_reserve_fences(obj, num_fences);
+}
+
+void dma_resv_add_shared_fence(struct dma_resv *obj, struct dma_fence *fence)
+{
+	dma_resv_add_fence(obj, fence, DMA_RESV_USAGE_READ);
+}
+
+void dma_resv_add_excl_fence(struct dma_resv *obj, struct dma_fence *fence)
+{
+	dma_resv_add_fence(obj, fence, DMA_RESV_USAGE_WRITE);
+}
+#endif
 
 int kbase_dma_fence_wait(struct kbase_jd_atom *katom,
 			 struct kbase_dma_fence_resv_info *info)
