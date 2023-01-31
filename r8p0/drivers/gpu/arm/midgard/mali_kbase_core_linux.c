@@ -1881,7 +1881,30 @@ static int kbase_check_flags(int flags)
 	return 0;
 }
 
+/* The following function is taken from the kernel and just
+ * renamed. As it's not exported to modules we must copy-paste it here.
+ */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+static unsigned long kbase_unmapped_area_topdown(struct vm_unmapped_area_info
+		*info, bool is_shader_code)
+{
+	unsigned long length, gap;
 
+	MA_STATE(mas, &current->mm->mm_mt, 0, 0);
+	/* Adjust search length to account for worst case alignment overhead */
+	length = info->length + info->align_mask;
+	if (length < info->length)
+		return -ENOMEM;
+
+	if (mas_empty_area_rev(&mas, info->low_limit, info->high_limit - 1,
+				length))
+		return -ENOMEM;
+
+	gap = mas.last + 1 - info->length;
+	gap -= (gap - info->align_offset) & info->align_mask;
+	return gap;
+}
+#else
 /**
  * align_and_check - Align the specified pointer to the provided alignment and
  *                   check that it is still in range.
@@ -2025,6 +2048,7 @@ check_current:
 
 	return -ENOMEM;
 }
+#endif
 
 static unsigned long kbase_get_unmapped_area(struct file *filp,
 		const unsigned long addr, const unsigned long len,
@@ -2100,7 +2124,10 @@ static unsigned long kbase_get_unmapped_area(struct file *filp,
 	info.low_limit = low_limit;
 	info.high_limit = high_limit;
 	info.align_offset = align_offset;
-	info.align_mask = align_mask;
+	if (is_shader_code)
+		info.align_mask = BASE_MEM_MASK_4GB;
+	else
+		info.align_mask = align_mask;
 
 	ret = kbase_unmapped_area_topdown(&info, is_shader_code);
 
