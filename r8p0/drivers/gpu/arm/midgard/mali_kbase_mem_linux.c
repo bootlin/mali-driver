@@ -2514,12 +2514,12 @@ KBASE_EXPORT_TEST_API(kbase_vunmap);
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0))
 static void mali_add_mm_counter(struct mm_struct *mm, int member, long value)
 {
-	atomic_long_add(value, &mm->rss_stat.count[MM_FILEPAGES]);
+	atomic_long_add(value, &mm->rss_stat.count[member]);
 }
 #else
 static void mali_add_mm_counter(struct mm_struct *mm, int member, long value)
 {
-	add_mm_counter(mm, MM_FILEPAGES, value);
+	add_mm_counter(mm, member, value);
 }
 #endif
 
