@@ -2249,7 +2249,11 @@ int kbase_mmap(struct file *file, struct vm_area_struct *vma)
 
 	/* strip away corresponding VM_MAY% flags to the VM_% flags requested */
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
-	vm_flags_clear(vma, (vma->vm_flags & (VM_READ | VM_WRITE)) << 4);
+	if (!(vma->vm_flags & VM_READ))
+		vm_flags_clear(vma, VM_MAYREAD);
+
+	if (!(vma->vm_flags & VM_WRITE))
+		vm_flags_clear(vma, VM_MAYWRITE);
 #else
 	vma->vm_flags &= ~((vma->vm_flags & (VM_READ | VM_WRITE)) << 4);
 #endif
