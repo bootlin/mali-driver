@@ -379,7 +379,9 @@ int kbase_mem_pool_init(struct kbase_mem_pool *pool,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 1, 0)
 	pool->reclaim.batch = 0;
 #endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)
+	shrinker_register(&pool->reclaim);
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 	register_shrinker(&pool->reclaim, "mali");
 #else
 	register_shrinker(&pool->reclaim);
@@ -400,7 +402,11 @@ void kbase_mem_pool_term(struct kbase_mem_pool *pool)
 
 	pool_dbg(pool, "terminate()\n");
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)
+	shrinker_free(&pool->reclaim);
+#else
 	unregister_shrinker(&pool->reclaim);
+#endif
 
 	kbase_mem_pool_lock(pool);
 	pool->max_size = 0;

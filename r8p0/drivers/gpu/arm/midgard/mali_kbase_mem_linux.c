@@ -446,7 +446,9 @@ int kbase_mem_evictable_init(struct kbase_context *kctx)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 1, 0)
 	kctx->reclaim.batch = 0;
 #endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)
+	shrinker_register(&kctx->reclaim);
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)
 	register_shrinker(&kctx->reclaim, "mali");
 #else
 	register_shrinker(&kctx->reclaim);
@@ -456,7 +458,11 @@ int kbase_mem_evictable_init(struct kbase_context *kctx)
 
 void kbase_mem_evictable_deinit(struct kbase_context *kctx)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)
+	shrinker_free(&kctx->reclaim);
+#else
 	unregister_shrinker(&kctx->reclaim);
+#endif
 }
 
 struct kbase_mem_zone_cache_entry {
