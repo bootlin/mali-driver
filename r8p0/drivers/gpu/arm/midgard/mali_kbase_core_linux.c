@@ -2114,8 +2114,13 @@ static unsigned long kbase_get_unmapped_area(struct file *filp,
 			}
 #ifndef CONFIG_64BIT
 	} else {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 10, 0))
+		return mm_get_unmapped_area(current->mm, filp, addr, len,
+					    pgoff, flags);
+#else
 		return current->mm->get_unmapped_area(filp, addr, len, pgoff,
 						      flags);
+#endif
 #endif
 	}
 
