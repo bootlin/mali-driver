@@ -4293,13 +4293,24 @@ static const struct attribute_group kbase_attr_group = {
 	.attrs = kbase_attrs,
 };
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0))
+static void kbase_platform_device_remove(struct platform_device *pdev)
+#else
 static int kbase_platform_device_remove(struct platform_device *pdev)
+#endif
 {
 	struct kbase_device *kbdev = to_kbase_device(&pdev->dev);
 	const struct list_head *dev_list;
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0))
 	if (!kbdev)
 		return -ENODEV;
+#else
+	if (!kbdev) {
+		dev_warn(kbdev->dev, "Failed to remove device");
+		return;
+	}
+#endif
 
 	kfree(kbdev->gpu_props.prop_buffer);
 
@@ -4434,7 +4445,9 @@ static int kbase_platform_device_remove(struct platform_device *pdev)
 
 	kbase_device_free(kbdev);
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0))
 	return 0;
+#endif
 }
 
 
