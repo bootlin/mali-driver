@@ -1371,8 +1371,13 @@ static int kbase_pm_do_reset(struct kbase_device *kbdev)
 	rtdata.timed_out = 0;
 
 	/* Create a timer to use as a timeout on the reset */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0))
+	hrtimer_setup_on_stack(&rtdata.timer, kbasep_reset_timeout,
+			       CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+#else
 	hrtimer_init_on_stack(&rtdata.timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	rtdata.timer.function = kbasep_reset_timeout;
+#endif
 
 	hrtimer_start(&rtdata.timer, HR_TIMER_DELAY_MSEC(RESET_TIMEOUT),
 							HRTIMER_MODE_REL);

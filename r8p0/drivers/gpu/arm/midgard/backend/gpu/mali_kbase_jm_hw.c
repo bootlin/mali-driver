@@ -804,9 +804,14 @@ void kbase_jm_wait_for_zero_jobs(struct kbase_context *kctx)
 	struct zap_reset_data reset_data;
 	unsigned long flags;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0))
+	hrtimer_setup_on_stack(&reset_data.timer, zap_timeout_callback,
+			       CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+#else
 	hrtimer_init_on_stack(&reset_data.timer, CLOCK_MONOTONIC,
 							HRTIMER_MODE_REL);
 	reset_data.timer.function = zap_timeout_callback;
+#endif
 
 	spin_lock_init(&reset_data.lock);
 
