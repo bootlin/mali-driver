@@ -150,7 +150,7 @@ void kbase_sync_fence_in_remove(struct kbase_jd_atom *katom);
  */
 void kbase_sync_fence_out_remove(struct kbase_jd_atom *katom);
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 220))
 #include <linux/module.h>
 #include <linux/fdtable.h>
 
