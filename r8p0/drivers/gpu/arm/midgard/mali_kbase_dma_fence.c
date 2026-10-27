@@ -332,12 +332,16 @@ void kbase_dma_fence_add_reservation(struct dma_resv *resv,
 	(info->dma_fence_resv_count)++;
 }
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0)) || \
+    ((LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 266)) && \
+     (LINUX_VERSION_CODE < KERNEL_VERSION(5, 11, 0)))
 int dma_resv_reserve_shared(struct dma_resv *obj, unsigned int num_fences)
 {
 	return dma_resv_reserve_fences(obj, num_fences);
 }
+#endif
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0))
 void dma_resv_add_shared_fence(struct dma_resv *obj, struct dma_fence *fence)
 {
 	dma_resv_add_fence(obj, fence, DMA_RESV_USAGE_READ);
